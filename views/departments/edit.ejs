@@ -1,0 +1,98 @@
+<!-- Edit Department Header -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title"><i class="fas fa-building me-2"></i>Edit Department</h2>
+          <a href="/departments" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Departments
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Department Form -->
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/departments/<%= department._id %>?_method=PUT" method="POST" class="needs-validation" novalidate>
+          <div class="mb-3">
+            <label for="name" class="form-label">Department Name</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="name" 
+                   name="name" 
+                   value="<%= department.name %>"
+                   required 
+                   maxlength="50"
+                   pattern="[A-Za-z\s]+"
+                   title="Department name should only contain letters and spaces">
+            <div class="form-text">Maximum 50 characters. Only letters and spaces allowed.</div>
+            <div class="invalid-feedback">
+              Please enter a valid department name (letters and spaces only).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="code" class="form-label">Department Code</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="code" 
+                   name="code" 
+                   value="<%= department.code %>"
+                   required 
+                   maxlength="10"
+                   pattern="[A-Z0-9]+"
+                   title="Department code should only contain uppercase letters and numbers">
+            <div class="form-text">Maximum 10 characters. Only uppercase letters and numbers allowed.</div>
+            <div class="invalid-feedback">
+              Please enter a valid department code (uppercase letters and numbers only).
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" 
+                      id="description" 
+                      name="description" 
+                      rows="4" 
+                      maxlength="500"><%= department.description %></textarea>
+            <div class="form-text">Maximum 500 characters. Optional.</div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-save me-2"></i>Update Department
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Form Validation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('.needs-validation');
+  
+  form.addEventListener('submit', function(event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    form.classList.add('was-validated');
+  });
+
+  // Convert department code to uppercase
+  const codeInput = document.getElementById('code');
+  codeInput.addEventListener('input', function() {
+    this.value = this.value.toUpperCase();
+  });
+});
+</script> 

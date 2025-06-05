@@ -1,0 +1,126 @@
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title"><i class="fas fa-user-edit me-2"></i>Edit User</h2>
+          <a href="/users" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Users
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/users/<%= user._id %>" method="POST">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                value="<%= user.name %>"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-control"
+                value="<%= user.username %>"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-control"
+              value="<%= user.email %>"
+              required
+            />
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="role" class="form-label">Role</label>
+              <select name="role" id="role" class="form-select" required>
+                <option value="student" <%= user.role === 'student' ? 'selected' : '' %>>Student</option>
+                <% if(currentUser.role === 'superAdmin') { %>
+                  <option value="deptAdmin" <%= user.role === 'deptAdmin' ? 'selected' : '' %>>Department Admin</option>
+                  <option value="superAdmin" <%= user.role === 'superAdmin' ? 'selected' : '' %>>Super Admin</option>
+                <% } %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="department" class="form-label">Department</label>
+              <select name="department" id="department" class="form-select" required>
+                <% departments.forEach(dept => { %>
+                  <% if(currentUser.role === 'deptAdmin' && currentUser.department.toString() === dept._id.toString()) { %>
+                    <option value="<%= dept._id %>" <%= user.department.toString() === dept._id.toString() ? 'selected' : '' %>>
+                      <%= dept.name %>
+                    </option>
+                  <% } else if(currentUser.role === 'superAdmin') { %>
+                    <option value="<%= dept._id %>" <%= user.department.toString() === dept._id.toString() ? 'selected' : '' %>>
+                      <%= dept.name %>
+                    </option>
+                  <% } %>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+          
+          <hr class="my-4">
+          
+          <h4 class="mb-3">Change Password</h4>
+          <p class="text-muted mb-3">Leave blank if you don't want to change the user's password</p>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="password" class="form-label">New Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-control"
+                placeholder="Enter new password"
+                minlength="6"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="password2" class="form-label">Confirm New Password</label>
+              <input
+                type="password"
+                id="password2"
+                name="password2"
+                class="form-control"
+                placeholder="Confirm new password"
+                minlength="6"
+              />
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-save me-2"></i>Update User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

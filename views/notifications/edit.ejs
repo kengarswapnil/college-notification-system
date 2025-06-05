@@ -1,0 +1,176 @@
+<!-- Edit Notification Header -->
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title"><i class="fas fa-edit me-2"></i>Edit Notification</h2>
+          <a href="/notifications" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Notifications
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Notification Form -->
+<div class="row">
+  <div class="col-md-8 mx-auto">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/notifications/<%= notification._id %>?_method=PUT" method="POST" class="needs-validation" enctype="multipart/form-data" novalidate>
+          
+          <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <input type="text" 
+                   class="form-control" 
+                   id="title" 
+                   name="title" 
+                   value="<%= notification.title %>"
+                   required 
+                   maxlength="100">
+            <div class="form-text">Maximum 100 characters.</div>
+            <div class="invalid-feedback">
+              Please enter a notification title.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="description" class="form-label">Description</label>
+            <textarea class="form-control" 
+                      id="description" 
+                      name="description" 
+                      rows="4" 
+                      required 
+                      maxlength="1000"><%= notification.description %></textarea>
+            <div class="form-text">Maximum 1000 characters.</div>
+            <div class="invalid-feedback">
+              Please enter a notification description.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="category" class="form-label">Category</label>
+            <select class="form-select" id="category" name="category" required>
+              <option value="" disabled>Select Category</option>
+              <% categories.forEach(category => { %>
+                <option value="<%= category %>" <%= notification.category === category ? 'selected' : '' %>>
+                  <%= category %>
+                </option>
+              <% }); %>
+            </select>
+            <div class="invalid-feedback">
+              Please select a category.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="department" class="form-label">Department</label>
+            <select class="form-select" 
+                    id="department" 
+                    name="department" 
+                    required
+                    <%= currentUser.role === 'deptAdmin' ? 'disabled' : '' %>>
+              <% if(currentUser.role === 'deptAdmin') { %>
+                <option value="<%= currentUser.department._id %>" selected>
+                  <%= currentUser.department.name %>
+                </option>
+              <% } else { %>
+                <option value="" disabled>Select Department</option>
+                <% departments.forEach(dept => { %>
+                  <option value="<%= dept._id %>" <%= notification.department._id.toString() === dept._id.toString() ? 'selected' : '' %>>
+                    <%= dept.name %>
+                  </option>
+                <% }); %>
+              <% } %>
+            </select>
+            <div class="invalid-feedback">
+              Please select a department.
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="date" class="form-label">Date</label>
+            <input type="datetime-local" 
+                   class="form-control" 
+                   id="date" 
+                   name="date" 
+                   value="<%= notification.date.toISOString().slice(0, 16) %>">
+            <div class="form-text">Optional. Defaults to current date/time if not specified.</div>
+          </div>
+
+          <div class="mb-3">
+            <label for="file" class="form-label">Attachment</label>
+            <% if(notification.file) { %>
+              <div class="mb-2">
+                <a href="/uploads/<%= notification.file %>" class="btn btn-sm btn-info" target="_blank">
+                  <i class="fas fa-file me-2"></i>Current File: <%= notification.file %>
+                </a>
+                <button type="button" class="btn btn-sm btn-danger" id="removeFile">
+                  <i class="fas fa-times me-2"></i>Remove
+                </button>
+                <input type="hidden" name="currentFile" value="<%= notification.file %>">
+              </div>
+            <% } %>
+            <input type="file" 
+                   class="form-control" 
+                   id="file" 
+                   name="file"
+                   accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.xlsx,.xls,.ppt,.pptx">
+            <div class="form-text">
+              Optional. Maximum file size: 10MB. Allowed types: PDF, DOC, DOCX, JPG, JPEG, PNG, XLSX, XLS, PPT, PPTX.
+            </div>
+          </div>
+
+          <div class="d-grid gap-2">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-save me-2"></i>Update Notification
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Form Validation Script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  const form = document.querySelector('.needs-validation');
+  const removeFileBtn = document.getElementById('removeFile');
+  const fileInput = document.getElementById('file');
+  
+  // Form validation
+  form.addEventListener('submit', function(event) {
+    if (!form.checkValidity()) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+    
+    // File size validation
+    if (fileInput.files.length > 0) {
+      const fileSize = fileInput.files[0].size / 1024 / 1024; // in MB
+      if (fileSize > 10) {
+        event.preventDefault();
+        alert('File size must be less than 10MB');
+        return;
+      }
+    }
+    
+    form.classList.add('was-validated');
+  });
+
+  // Handle file removal
+  if (removeFileBtn) {
+    removeFileBtn.addEventListener('click', function() {
+      const currentFileInput = document.querySelector('input[name="currentFile"]');
+      if (currentFileInput) {
+        currentFileInput.value = '';
+      }
+      this.previousElementSibling.remove();
+      this.remove();
+    });
+  }
+});
+</script> 

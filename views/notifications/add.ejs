@@ -1,0 +1,176 @@
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title"><i class="fas fa-plus-circle me-2"></i>Add New Notification</h2>
+          <a href="/notifications" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Notifications
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/notifications" method="POST" enctype="multipart/form-data">
+          <div class="row g-3">
+            <!-- Title -->
+            <div class="col-md-12">
+              <label for="title" class="form-label">Title <span class="text-danger">*</span></label>
+              <input type="text" class="form-control" id="title" name="title" required maxlength="100" placeholder="Enter notification title">
+              <div class="form-text">Maximum 100 characters</div>
+            </div>
+
+            <!-- Description -->
+            <div class="col-md-12">
+              <label for="description" class="form-label">Description <span class="text-danger">*</span></label>
+              <textarea class="form-control" id="description" name="description" rows="4" required maxlength="1000" placeholder="Enter notification description"></textarea>
+              <div class="form-text">Maximum 1000 characters</div>
+            </div>
+
+            <!-- Category -->
+            <div class="col-md-6">
+              <label for="category" class="form-label">Category <span class="text-danger">*</span></label>
+              <select class="form-select" id="category" name="category" required>
+                <option value="">Select a category</option>
+                <% categories.forEach(category => { %>
+                  <option value="<%= category %>"><%= category.charAt(0).toUpperCase() + category.slice(1) %></option>
+                <% }); %>
+              </select>
+            </div>
+
+            <!-- Department -->
+            <div class="col-md-6">
+              <label for="department" class="form-label">Department <span class="text-danger">*</span></label>
+              <select class="form-select" id="department" name="department" required <%= user.role === 'deptAdmin' ? 'disabled' : '' %>>
+                <option value="">Select a department</option>
+                <% departments.forEach(dept => { %>
+                  <option value="<%= dept._id %>" <%= user.role === 'deptAdmin' && user.department.toString() === dept._id.toString() ? 'selected' : '' %>>
+                    <%= dept.name %>
+                  </option>
+                <% }); %>
+              </select>
+              <% if(user.role === 'deptAdmin') { %>
+                <input type="hidden" name="department" value="<%= user.department %>">
+              <% } %>
+            </div>
+
+            <!-- Date -->
+            <div class="col-md-6">
+              <label for="date" class="form-label">Date</label>
+              <input type="datetime-local" class="form-control" id="date" name="date" value="<%= new Date().toISOString().slice(0, 16) %>">
+              <div class="form-text">Leave empty to use current date and time</div>
+            </div>
+
+            <!-- File Upload -->
+            <div class="col-md-6">
+              <label for="file" class="form-label">Attachment</label>
+              <input type="file" class="form-control" id="file" name="file">
+              <div class="form-text">
+                Allowed file types: PDF, DOC, DOCX, JPG, JPEG, PNG, XLSX, XLS, PPT, PPTX<br>
+                Maximum file size: 10MB
+              </div>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="col-12">
+              <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save me-2"></i>Create Notification
+              </button>
+              <a href="/notifications" class="btn btn-secondary ms-2">
+                <i class="fas fa-times me-2"></i>Cancel
+              </a>
+            </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Form validation
+    const form = document.querySelector('form');
+    const titleInput = document.getElementById('title');
+    const descriptionInput = document.getElementById('description');
+    const categorySelect = document.getElementById('category');
+    const departmentSelect = document.getElementById('department');
+    const fileInput = document.getElementById('file');
+
+    form.addEventListener('submit', function(e) {
+      let isValid = true;
+      let errorMessage = '';
+
+      // Validate title
+      if (!titleInput.value.trim()) {
+        isValid = false;
+        errorMessage += 'Title is required\n';
+      } else if (titleInput.value.length > 100) {
+        isValid = false;
+        errorMessage += 'Title cannot be more than 100 characters\n';
+      }
+
+      // Validate description
+      if (!descriptionInput.value.trim()) {
+        isValid = false;
+        errorMessage += 'Description is required\n';
+      } else if (descriptionInput.value.length > 1000) {
+        isValid = false;
+        errorMessage += 'Description cannot be more than 1000 characters\n';
+      }
+
+      // Validate category
+      if (!categorySelect.value) {
+        isValid = false;
+        errorMessage += 'Category is required\n';
+      }
+
+      // Validate department (only if not dept admin)
+      if (!departmentSelect.disabled && !departmentSelect.value) {
+        isValid = false;
+        errorMessage += 'Department is required\n';
+      }
+
+      // Validate file size
+      if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+        
+        if (file.size > maxSize) {
+          isValid = false;
+          errorMessage += 'File size cannot exceed 10MB\n';
+        }
+
+        // Validate file type
+        const allowedTypes = [
+          'application/pdf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'image/jpeg',
+          'image/jpg',
+          'image/png',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-excel',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        ];
+
+        if (!allowedTypes.includes(file.type)) {
+          isValid = false;
+          errorMessage += 'Invalid file type. Please upload a PDF, DOC, DOCX, JPG, JPEG, PNG, XLSX, XLS, PPT, or PPTX file\n';
+        }
+      }
+
+      if (!isValid) {
+        e.preventDefault();
+        alert(errorMessage);
+      }
+    });
+  });
+</script> 

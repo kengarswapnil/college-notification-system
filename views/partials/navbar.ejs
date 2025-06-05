@@ -1,0 +1,58 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container">
+    <a class="navbar-brand" href="/dashboard">
+      <i class="fas fa-university me-2"></i>College Notification System
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item">
+          <a class="nav-link" href="/dashboard"><i class="fas fa-tachometer-alt me-1"></i>Dashboard</a>
+        </li>
+        
+        <% if (user && user.role === 'student') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/notifications/student"><i class="fas fa-bell me-1"></i>Notifications</a>
+          </li>
+        <% } %>
+        
+        <% if (user && (user.role === 'deptAdmin' || user.role === 'superAdmin')) { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/notifications"><i class="fas fa-bell me-1"></i>Notifications</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/users"><i class="fas fa-users me-1"></i>Users</a>
+          </li>
+          <% if (user.role === 'deptAdmin') { %>
+            <li class="nav-item">
+              <a class="nav-link" href="/departments/<%= user.department %>/data"><i class="fas fa-chart-bar me-1"></i>Department Data</a>
+            </li>
+          <% } %>
+        <% } %>
+        
+        <% if (user && user.role === 'superAdmin') { %>
+          <li class="nav-item">
+            <a class="nav-link" href="/departments"><i class="fas fa-building me-1"></i>Departments</a>
+          </li>
+        <% } %>
+      </ul>
+      
+      <% if (user) { %>
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+              <i class="fas fa-user me-1"></i><%= user.name %>
+            </a>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+              <li><a class="dropdown-item" href="/users/profile"><i class="fas fa-id-card me-1"></i>Profile</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item" href="/users/logout"><i class="fas fa-sign-out-alt me-1"></i>Logout</a></li>
+            </ul>
+          </li>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</nav>

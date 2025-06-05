@@ -1,0 +1,121 @@
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title"><i class="fas fa-user-plus me-2"></i>Add New User</h2>
+          <a href="/users" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Users
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <form action="/users/register" method="POST">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                placeholder="Enter full name"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-control"
+                placeholder="Enter username"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-control"
+              placeholder="Enter email address"
+              required
+            />
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                id="password"
+                name="password"
+                class="form-control"
+                placeholder="Enter password"
+                minlength="6"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="password2" class="form-label">Confirm Password</label>
+              <input
+                type="password"
+                id="password2"
+                name="password2"
+                class="form-control"
+                placeholder="Confirm password"
+                minlength="6"
+                required
+              />
+            </div>
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="role" class="form-label">Role</label>
+              <select name="role" id="role" class="form-select" required>
+                <option value="" selected disabled>Select Role</option>
+                <option value="student">Student</option>
+                <% if(user.role === 'superAdmin') { %>
+                  <option value="deptAdmin">Department Admin</option>
+                  <option value="superAdmin">Super Admin</option>
+                <% } %>
+              </select>
+            </div>
+            <div class="col-md-6">
+              <label for="department" class="form-label">Department</label>
+              <select name="department" id="department" class="form-select" required>
+                <option value="" selected disabled>Select Department</option>
+                <% departments.forEach(dept => { %>
+                  <% if(user.role === 'deptAdmin' && user.department.toString() === dept._id.toString()) { %>
+                    <option value="<%= dept._id %>"><%= dept.name %></option>
+                  <% } else if(user.role === 'superAdmin') { %>
+                    <option value="<%= dept._id %>"><%= dept.name %></option>
+                  <% } %>
+                <% }); %>
+              </select>
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-save me-2"></i>Register User
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>

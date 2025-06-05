@@ -1,0 +1,193 @@
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center">
+          <h2 class="card-title"><i class="fas fa-users me-2"></i>User Management</h2>
+          <a href="/users/add" class="btn btn-primary">
+            <i class="fas fa-user-plus me-2"></i>Add New User
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title mb-3">Filter Users</h4>
+        <form action="/users" method="GET" class="row g-3">
+          <div class="col-md-4">
+            <label for="role" class="form-label">Role</label>
+            <select name="role" id="role" class="form-select">
+              <option value="">All Roles</option>
+              <option value="student" <%= query.role === 'student' ? 'selected' : '' %>>Student</option>
+              <option value="deptAdmin" <%= query.role === 'deptAdmin' ? 'selected' : '' %>>Department Admin</option>
+              <% if(user.role === 'superAdmin') { %>
+                <option value="superAdmin" <%= query.role === 'superAdmin' ? 'selected' : '' %>>Super Admin</option>
+              <% } %>
+            </select>
+          </div>
+          
+          <div class="col-md-4">
+            <label for="department" class="form-label">Department</label>
+            <select name="department" id="department" class="form-select">
+              <option value="">All Departments</option>
+              <% departments.forEach(dept => { %>
+                <option value="<%= dept._id %>" <%= query.department === dept._id.toString() ? 'selected' : '' %>>
+                  <%= dept.name %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+          
+          <div class="col-md-4">
+            <label for="search" class="form-label">Search</label>
+            <input type="text" name="search" id="search" class="form-control" placeholder="Search by name, username, or email" value="<%= query.search || '' %>">
+          </div>
+          
+          <div class="col-12">
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-filter me-2"></i>Apply Filters
+            </button>
+            <a href="/users" class="btn btn-secondary ms-2">
+              <i class="fas fa-sync-alt me-2"></i>Reset
+            </a>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <% if(users.length > 0) { %>
+          <div class="table-responsive">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Username</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                  <th>Department</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% users.forEach(user => { %>
+                  <tr>
+                    <td><%= user.name %></td>
+                    <td><%= user.username %></td>
+                    <td><%= user.email %></td>
+                    <td>
+                      <% if(user.role === 'student') { %>
+                        <span class="badge bg-primary">Student</span>
+                      <% } else if(user.role === 'deptAdmin') { %>
+                        <span class="badge bg-success">Department Admin</span>
+                      <% } else { %>
+                        <span class="badge bg-danger">Super Admin</span>
+                      <% } %>
+                    </td>
+                    <td><%= user.department ? user.department.name : 'N/A' %></td>
+                    <td>
+                      <a href="/users/<%= user._id %>" class="btn btn-sm btn-info">
+                        <i class="fas fa-edit"></i>
+                      </a>
+                      <button class="btn btn-sm btn-danger delete-user" data-id="<%= user._id %>" data-name="<%= user.name %>">
+                        <i class="fas fa-trash"></i>
+                      </button>
+                    </td>
+                  </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+          
+          <!-- Pagination -->
+          <% if (pages > 1) { %>
+            <nav aria-label="Page navigation">
+              <ul class="pagination justify-content-center">
+                <% if (current > 1) { %>
+                  <li class="page-item">
+                    <a class="page-link" href="/users?page=<%= current-1 %><%= paginationQuery %>">
+                      <i class="fas fa-chevron-left"></i>
+                    </a>
+                  </li>
+                <% } %>
+                
+                <% for(let i = 1; i <= pages; i++) { %>
+                  <li class="page-item <%= i === current ? 'active' : '' %>">
+                    <a class="page-link" href="/users?page=<%= i %><%= paginationQuery %>"><%= i %></a>
+                  </li>
+                <% } %>
+                
+                <% if (current < pages) { %>
+                  <li class="page-item">
+                    <a class="page-link" href="/users?page=<%= current+1 %><%= paginationQuery %>">
+                      <i class="fas fa-chevron-right"></i>
+                    </a>
+                  </li>
+                <% } %>
+              </ul>
+            </nav>
+          <% } %>
+        <% } else { %>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No users found matching your criteria.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete User Modal -->
+<div class="modal fade" id="deleteUserModal" tabindex="-1" aria-labelledby="deleteUserModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="deleteUserModalLabel">Confirm Delete</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <p>Are you sure you want to delete the user <strong id="userName"></strong>?</p>
+        <p class="text-danger">This action cannot be undone.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+        <form id="deleteUserForm" method="POST">
+          <input type="hidden" name="_method" value="DELETE">
+          <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Delete user modal setup
+    const deleteUserBtns = document.querySelectorAll('.delete-user');
+    const deleteUserForm = document.getElementById('deleteUserForm');
+    const userNameElement = document.getElementById('userName');
+    
+    deleteUserBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const userId = this.getAttribute('data-id');
+        const userName = this.getAttribute('data-name');
+        
+        deleteUserForm.action = `/users/${userId}?_method=DELETE`;
+        userNameElement.textContent = userName;
+        
+        const deleteModal = new bootstrap.Modal(document.getElementById('deleteUserModal'));
+        deleteModal.show();
+      });
+    });
+  });
+</script>

@@ -1,0 +1,141 @@
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-lg">
+      <div class="card-body">
+        <h2 class="card-title"><i class="fas fa-tachometer-alt me-2"></i>Department Admin Dashboard</h2>
+        <p class="lead">Welcome, <%= user.name %>!</p>
+        <p>Department: <strong><%= department.name %></strong></p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        <h3 class="display-4 text-primary"><%= studentCount %></h3>
+        <p class="lead">Total Students</p>
+        <a href="/users?role=student" class="btn btn-outline-primary btn-sm">
+          <i class="fas fa-users me-1"></i>Manage Students
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        <h3 class="display-4 text-success"><%= totalNotifications %></h3>
+        <p class="lead">Total Notifications</p>
+        <a href="/notifications" class="btn btn-outline-success btn-sm">
+          <i class="fas fa-bell me-1"></i>Manage Notifications
+        </a>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-4">
+    <div class="card shadow-sm">
+      <div class="card-body text-center">
+        <h3 class="display-4 text-info"><%= department.code %></h3>
+        <p class="lead">Department Code</p>
+        <a href="/departments/<%= department._id %>/data" class="btn btn-outline-info btn-sm">
+          <i class="fas fa-chart-bar me-1"></i>View Statistics
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row mb-4">
+  <div class="col-md-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <h4 class="card-title"><i class="fas fa-chart-pie me-2"></i>Notifications by Category</h4>
+        <div class="row">
+          <% Object.keys(notificationsByCategory).forEach(category => { %>
+            <div class="col-md-3 mb-3">
+              <div class="card bg-light">
+                <div class="card-body text-center">
+                  <h5 class="card-title"><%= category %></h5>
+                  <p class="card-text display-6"><%= notificationsByCategory[category] %></p>
+                </div>
+              </div>
+            </div>
+          <% }); %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="card-title"><i class="fas fa-bell me-2"></i>Recent Notifications</h4>
+          <a href="/notifications" class="btn btn-primary btn-sm">
+            <i class="fas fa-list me-1"></i>View All
+          </a>
+        </div>
+        
+        <% if(recentNotifications.length > 0) { %>
+          <div class="list-group">
+            <% recentNotifications.forEach(notification => { %>
+              <div class="list-group-item list-group-item-action">
+                <div class="d-flex w-100 justify-content-between">
+                  <h5 class="mb-1"><%= notification.title %></h5>
+                  <small><%= new Date(notification.createdAt).toLocaleDateString() %></small>
+                </div>
+                <p class="mb-1"><%= notification.description.substring(0, 100) %><%= notification.description.length > 100 ? '...' : '' %></p>
+                <small class="text-muted"><span class="badge bg-primary"><%= notification.category %></span></small>
+              </div>
+            <% }); %>
+          </div>
+        <% } else { %>
+          <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>No recent notifications found.
+          </div>
+        <% } %>
+      </div>
+    </div>
+  </div>
+  
+  <div class="col-md-6">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h4 class="card-title"><i class="fas fa-tasks me-2"></i>Quick Actions</h4>
+        </div>
+        
+        <div class="list-group">
+          <a href="/notifications/add" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1"><i class="fas fa-plus-circle me-2"></i>Add New Notification</h5>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <p class="mb-1">Create a new notification for your department</p>
+          </a>
+          
+          <a href="/users/add" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1"><i class="fas fa-user-plus me-2"></i>Add New Student</h5>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <p class="mb-1">Register a new student to your department</p>
+          </a>
+          
+          <a href="/users/profile" class="list-group-item list-group-item-action">
+            <div class="d-flex w-100 justify-content-between">
+              <h5 class="mb-1"><i class="fas fa-user-edit me-2"></i>Update Profile</h5>
+              <i class="fas fa-chevron-right"></i>
+            </div>
+            <p class="mb-1">Update your profile information</p>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

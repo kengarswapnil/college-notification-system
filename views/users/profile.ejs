@@ -1,0 +1,118 @@
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card shadow-lg">
+      <div class="card-body p-5">
+        <h1 class="text-center mb-4"><i class="fas fa-user-circle me-2"></i>User Profile</h1>
+        
+        <form action="/users/profile" method="POST">
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="name" class="form-label">Full Name</label>
+              <input
+                type="text"
+                id="name"
+                name="name"
+                class="form-control"
+                value="<%= user.name %>"
+                required
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                id="username"
+                name="username"
+                class="form-control"
+                value="<%= user.username %>"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              name="email"
+              class="form-control"
+              value="<%= user.email %>"
+              required
+            />
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="role" class="form-label">Role</label>
+              <input
+                type="text"
+                id="role"
+                class="form-control"
+                value="<%= user.role === 'student' ? 'Student' : user.role === 'deptAdmin' ? 'Department Admin' : 'Super Admin' %>"
+                readonly
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="department" class="form-label">Department</label>
+              <input
+                type="text"
+                id="department"
+                class="form-control"
+                value="<%= user.department ? user.department.name : 'N/A' %>"
+                readonly
+              />
+            </div>
+          </div>
+          
+          <hr class="my-4">
+          
+          <h4 class="mb-3">Change Password</h4>
+          <p class="text-muted mb-3">Leave blank if you don't want to change your password</p>
+          
+          <div class="mb-3">
+            <label for="currentPassword" class="form-label">Current Password</label>
+            <input
+              type="password"
+              id="currentPassword"
+              name="currentPassword"
+              class="form-control"
+              placeholder="Enter your current password"
+            />
+          </div>
+          
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label for="newPassword" class="form-label">New Password</label>
+              <input
+                type="password"
+                id="newPassword"
+                name="newPassword"
+                class="form-control"
+                placeholder="Enter new password"
+                minlength="6"
+              />
+            </div>
+            <div class="col-md-6">
+              <label for="confirmPassword" class="form-label">Confirm New Password</label>
+              <input
+                type="password"
+                id="confirmPassword"
+                name="confirmPassword"
+                class="form-control"
+                placeholder="Confirm new password"
+                minlength="6"
+              />
+            </div>
+          </div>
+          
+          <div class="d-grid gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">
+              <i class="fas fa-save me-2"></i>Update Profile
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
